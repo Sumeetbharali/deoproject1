@@ -1,3 +1,6 @@
+import 'package:classwix_orbit/Screen/Group.dart';
+import 'package:classwix_orbit/Screen/Payroll%20Details.dart';
+import 'package:classwix_orbit/Screen/class%20Schedules.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
 
@@ -30,8 +33,8 @@ class _HiddenDrawerState extends State<HiddenDrawer> {
         selectedStyle: TextStyle(),
         colorLineSelected: Colors.deepPurple,
       ), HomePage()),
-      /*ScreenHiddenDrawer(ItemHiddenMenu(
-        name: 'Settings',
+      ScreenHiddenDrawer(ItemHiddenMenu(
+        name: 'Class Schedules',
         baseStyle:TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 18,
@@ -39,8 +42,28 @@ class _HiddenDrawerState extends State<HiddenDrawer> {
         ),
         selectedStyle: TextStyle(),
         colorLineSelected: Colors.deepPurple,
-      ), Settings())
-*/
+      ), TimetableScreen()),
+      ScreenHiddenDrawer(ItemHiddenMenu(
+        name: 'Groups',
+        baseStyle:TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          color: Colors.white,
+        ),
+        selectedStyle: TextStyle(),
+        colorLineSelected: Colors.deepPurple,
+      ), GroupsScreen()),
+      ScreenHiddenDrawer(ItemHiddenMenu(
+        name: 'Payroll Details',
+        baseStyle:TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          color: Colors.white,
+        ),
+        selectedStyle: TextStyle(),
+        colorLineSelected: Colors.deepPurple,
+      ), PaymentsScreen()),
+
     ];
   }
 
