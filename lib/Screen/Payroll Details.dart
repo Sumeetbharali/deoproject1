@@ -36,12 +36,14 @@ class PaymentsScreen extends StatelessWidget {
     },
   ];
 
+   PaymentsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Payments"),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.filter_list))],
+        title: const Text("Payments"),
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list))],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -49,7 +51,7 @@ class PaymentsScreen extends StatelessWidget {
           children: [
             TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 hintText: "Search payments...",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -59,17 +61,17 @@ class PaymentsScreen extends StatelessWidget {
                 fillColor: Colors.grey[200],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                FilterChip(label: Text("All"), onSelected: (val) {}),
-                FilterChip(label: Text("This Month"), onSelected: (val) {}),
-                FilterChip(label: Text("Last Month"), onSelected: (val) {}),
-                FilterChip(label: Text("Custom Range"), onSelected: (val) {}),
+                FilterChip(label: const Text("All"), onSelected: (val) {}),
+                FilterChip(label: const Text("This Month"), onSelected: (val) {}),
+                FilterChip(label: const Text("Last Month"), onSelected: (val) {}),
+                FilterChip(label: const Text("Custom Range"), onSelected: (val) {}),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: payments.length,
@@ -87,37 +89,37 @@ class PaymentsScreen extends StatelessWidget {
                         children: [
                           Text(
                             payment["group"],
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Row(
                             children: [
-                              Icon(Icons.calendar_today, size: 16),
-                              SizedBox(width: 5),
+                              const Icon(Icons.calendar_today, size: 16),
+                              const SizedBox(width: 5),
                               Text("Credit Date: ${payment["creditDate"]}"),
                             ],
                           ),
                           Row(
                             children: [
-                              Icon(Icons.receipt, size: 16),
-                              SizedBox(width: 5),
+                              const Icon(Icons.receipt, size: 16),
+                              const SizedBox(width: 5),
                               Text("Ref: ${payment["reference"]}"),
                             ],
                           ),
                           Row(
                             children: [
-                              Icon(Icons.book, size: 16),
-                              SizedBox(width: 5),
+                              const Icon(Icons.book, size: 16),
+                              const SizedBox(width: 5),
                               Text("Classes: ${payment["classes"]}"),
                             ],
                           ),
                           Row(
                             children: [
-                              Icon(Icons.monetization_on, size: 16),
-                              SizedBox(width: 5),
+                              const Icon(Icons.monetization_on, size: 16),
+                              const SizedBox(width: 5),
                               Text("Per Class: \$${payment["perClass"]}"),
                             ],
                           ),
@@ -125,7 +127,7 @@ class PaymentsScreen extends StatelessWidget {
                             alignment: Alignment.centerRight,
                             child: Text(
                               "\$${payment["totalAmount"]}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue,

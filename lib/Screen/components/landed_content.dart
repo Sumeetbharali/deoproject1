@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LandingContent extends StatelessWidget {
-  const LandingContent({Key? key}) : super(key: key);
+  const LandingContent({super.key});
 
   @override
   Widget build(BuildContext context) {

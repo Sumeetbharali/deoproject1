@@ -11,7 +11,7 @@ class GroupsScreen extends StatelessWidget {
     GroupData("Research Group", 7, "45m ago"),
   ];
 
-  GroupsScreen({Key? key}) : super(key: key);
+  GroupsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +35,14 @@ class GroupsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          const Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 15,
                 backgroundColor: Colors.grey,
               ),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'Groups',
                 style: TextStyle(
                   fontSize: 24,

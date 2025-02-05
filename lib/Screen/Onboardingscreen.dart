@@ -1,9 +1,8 @@
+import 'package:classwix_orbit/core/constants/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 import 'components/onboard_content.dart';
-
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -20,6 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
+        enableDrag: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(42),
@@ -40,7 +40,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: Image.asset(
-        "assets/3907915.png",
+        AppImages.backgroundImg,
         width: double.infinity,
         fit: BoxFit.cover,
       ),
