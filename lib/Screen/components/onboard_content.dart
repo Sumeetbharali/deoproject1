@@ -1,9 +1,11 @@
-import 'package:classwix_orbit/Screen/components/hidden_drawer.dart';
-import 'package:classwix_orbit/Screen/components/sing_up_form.dart';
-import 'package:classwix_orbit/Screen/home.dart';
+import 'package:classwix_orbit/controller/auth_controller.dart';
+import 'package:classwix_orbit/core/constants/copies.dart';
 import 'package:flutter/material.dart';
-import 'landed_content.dart';
+import 'package:logger/logger.dart';
 
+import 'hidden_drawer.dart';
+import 'landed_content.dart';
+import 'sing_up_form.dart';
 
 class OnboardContent extends StatefulWidget {
   const OnboardContent({super.key});
@@ -13,7 +15,14 @@ class OnboardContent extends StatefulWidget {
 }
 
 class _OnboardContentState extends State<OnboardContent> {
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = AuthController();
+  bool _isLoading = false;
+  String _errorMessage = '';
   late PageController _pageController;
+
+  var logger = Logger();
 
   @override
   void initState() {
@@ -24,10 +33,38 @@ class _OnboardContentState extends State<OnboardContent> {
     super.initState();
   }
 
+  // Function to authenticate user and store data in SharedPreferences
+  Future<void> login(String phone, String password) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+    bool success = await _authController.login(
+      _phoneController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HiddenDrawer()),
+      );
+    } else {
+      setState(() {
+        logger.e("User Not Found");
+        _errorMessage = AppCopies.userNotFound;
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double progress =
-    _pageController.hasClients ? (_pageController.page ?? 0) : 0;
+        _pageController.hasClients ? (_pageController.page ?? 0) : 0;
 
     return SizedBox(
       height: 400 + progress * 160,
@@ -40,9 +77,13 @@ class _OnboardContentState extends State<OnboardContent> {
               Expanded(
                 child: PageView(
                   controller: _pageController,
-                  children: const [
-                    LandingContent(),
-                    SignInForm(),
+                  children: [
+                    const LandingContent(),
+                    SignInForm(
+                      errorMessage: _errorMessage,
+                      passwordController: _passwordController,
+                      phoneController: _phoneController,
+                    ),
                   ],
                 ),
               ),
@@ -53,17 +94,16 @@ class _OnboardContentState extends State<OnboardContent> {
             bottom: 48 + progress * 180,
             right: 16,
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
                 if (_pageController.page == 0) {
                   _pageController.animateToPage(1,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.ease);
                 } else {
-                  // Navigate to the home screen when Sign In is clicked
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HiddenDrawer()),
-                  );
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : login(_phoneController.text.trim(),
+                          _passwordController.text.trim());
                 }
               },
               child: Container(
