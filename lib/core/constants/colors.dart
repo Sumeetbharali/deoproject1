@@ -6,4 +6,5 @@ class AppColors {
   static const Color skyblue = Colors.blueAccent;
   static const Color grey = Color(0xFFBEBEBE);
   static const Color red = Colors.red;
+  static Color lightPurp = Colors.deepPurple[100]!;
 }

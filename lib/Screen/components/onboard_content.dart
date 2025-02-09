@@ -2,22 +2,22 @@ import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:classwix_orbit/core/constants/copies.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-
-import 'hidden_drawer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../routes/routes.dart';
 import 'landed_content.dart';
 import 'sing_up_form.dart';
 
-class OnboardContent extends StatefulWidget {
+
+class OnboardContent extends ConsumerStatefulWidget {
   const OnboardContent({super.key});
 
   @override
-  State<OnboardContent> createState() => _OnboardContentState();
+  _OnboardContentState createState() => _OnboardContentState();
 }
 
-class _OnboardContentState extends State<OnboardContent> {
+class _OnboardContentState extends ConsumerState<OnboardContent> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final AuthController _authController = AuthController();
   bool _isLoading = false;
   String _errorMessage = '';
   late PageController _pageController;
@@ -26,6 +26,8 @@ class _OnboardContentState extends State<OnboardContent> {
 
   @override
   void initState() {
+        
+
     _pageController = PageController()
       ..addListener(() {
         setState(() {});
@@ -33,32 +35,45 @@ class _OnboardContentState extends State<OnboardContent> {
     super.initState();
   }
 
+ @override
+  void dispose() {
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+
   // Function to authenticate user and store data in SharedPreferences
   Future<void> login(String phone, String password) async {
     setState(() {
       _isLoading = true;
-      _errorMessage = '';
+      _errorMessage = '';  
     });
-    bool success = await _authController.login(
+
+    final authController = ref.read(authProvider.notifier);
+
+    bool success = await authController.login(
       _phoneController.text.trim(),
       _passwordController.text.trim(),
     );
 
+    setState(() {
+      _isLoading = false;
+    });
+
     if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HiddenDrawer()),
-      );
+
+
+      Navigator.of(context).pushNamedAndRemoveUntil(Routes.homePage, (route) => false);
+      
     } else {
+      
       setState(() {
         logger.e("User Not Found");
         _errorMessage = AppCopies.userNotFound;
       });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
@@ -94,6 +109,7 @@ class _OnboardContentState extends State<OnboardContent> {
             bottom: 48 + progress * 180,
             right: 16,
             child: GestureDetector(
+              
               onTap: () async {
                 if (_pageController.page == 0) {
                   _pageController.animateToPage(1,
@@ -163,6 +179,20 @@ class _OnboardContentState extends State<OnboardContent> {
           )
         ],
       ),
+    );
+  }
+}
+
+
+
+class Myhome extends StatelessWidget {
+  const Myhome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return  Scaffold(
+      appBar: AppBar(title: Text('Home'),),
+      body: Text('home'),
     );
   }
 }

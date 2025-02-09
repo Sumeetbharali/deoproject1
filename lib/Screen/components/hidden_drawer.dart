@@ -55,7 +55,7 @@ class _HiddenDrawerState extends State<HiddenDrawer> {
             selectedStyle: const TextStyle(),
             colorLineSelected: Colors.deepPurple,
           ),
-          GroupsScreen()),
+          const GroupsScreen()),
       ScreenHiddenDrawer(
           ItemHiddenMenu(
             name: 'Payroll Details',

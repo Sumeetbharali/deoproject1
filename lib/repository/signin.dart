@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:http/http.dart' as http;
 import '../model/signmodel.dart';
 import '../core/constants/api_endpoint.dart';
@@ -16,6 +17,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
+        logger.f("API $data");
         return LoginResponse.fromJson(data);
       } else {
         return null;
