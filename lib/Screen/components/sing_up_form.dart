@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SignInForm extends StatelessWidget {
-  const SignInForm({Key? key}) : super(key: key);
+  final TextEditingController phoneController;
+  final TextEditingController passwordController;
+  final String errorMessage;
+
+  const SignInForm({
+    super.key,
+    required this.phoneController,
+    required this.passwordController,
+    required this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +33,8 @@ class SignInForm extends StatelessWidget {
               child: Column(
                 children: [
                   TextFormField(
-
-                    keyboardType: TextInputType.emailAddress,
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       hintText: "Phone Number",
@@ -37,9 +47,15 @@ class SignInForm extends StatelessWidget {
                         color: Colors.grey.shade400,
                       ),
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(
+                          10), // Limit to 10 digits
+                    ],
                   ),
                   const SizedBox(height: 24),
                   TextFormField(
+                    controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Password",
@@ -56,19 +72,22 @@ class SignInForm extends StatelessWidget {
                 ],
               ),
             ),
-            // const SizedBox(height: 16),
+            const SizedBox(height: 20),
+            if (errorMessage.isNotEmpty)
+              Text(errorMessage, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 200),
             Center(
               child: Text(
-                "Sign in as a Instructor",
-                style: TextStyle(fontSize: 16, color: Colors.blueGrey.shade300),
+                "Sign in as an Instructor",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.blueGrey.shade300,
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-

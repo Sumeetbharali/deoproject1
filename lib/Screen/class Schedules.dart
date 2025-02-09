@@ -6,40 +6,40 @@ class TimetableScreen extends StatelessWidget {
       "Group A",
       "Mathematics",
       DateTime(2025, 2, 12, 9), // Monday
-      Duration(hours: 2),
+      const Duration(hours: 2),
       Colors.red.shade100,
     ),
     ScheduleEvent(
       "Group B",
       "English",
       DateTime(2025, 2, 15, 10), // Thursday
-      Duration(hours: 2),
+      const Duration(hours: 2),
       Colors.blue.shade100,
     ),
     ScheduleEvent(
       "Group C",
       "Chemistry",
       DateTime(2025, 2, 14, 11), // Wednesday
-      Duration(hours: 2),
+      const Duration(hours: 2),
       Colors.green.shade100,
     ),
     ScheduleEvent(
       "Group A",
       "Biology",
       DateTime(2025, 2, 14, 13), // Wednesday
-      Duration(hours: 2),
+      const Duration(hours: 2),
       Colors.purple.shade100,
     ),
     ScheduleEvent(
       "Group B",
       "Physics",
       DateTime(2025, 2, 12, 14), // Monday
-      Duration(hours: 2),
+      const Duration(hours: 2),
       Colors.blue.shade100,
     ),
   ];
 
-  TimetableScreen({Key? key}) : super(key: key);
+  TimetableScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
