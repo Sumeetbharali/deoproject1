@@ -20,8 +20,6 @@ class AuthService extends StateNotifier<String?> {
   Future<void> storeToken(String token) async {
     await _prefs!.setString(_authTokenKey, token);
     state = token;
-    logger.d("Token Stored: $token");
-    logger.d("Token Stored: $state");
   }
 
   // String? getToken() {   // oneline implementation

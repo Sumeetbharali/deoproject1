@@ -1,12 +1,13 @@
-import 'package:classwix_orbit/provider/authentication.dart';
+import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/signmodel.dart';
-import '../repository/signin.dart';
+import '../repository/signin_controller.dart';
 import 'dart:convert';
 
 var logger = Logger();
+
 class AuthController extends StateNotifier<LoginResponse?> {
   final ApiService _apiService = ApiService();
   static const String _authTokenKey = "token";
@@ -25,9 +26,9 @@ class AuthController extends StateNotifier<LoginResponse?> {
 
   Future<void> _loadUser() async {
     prefs ??= await SharedPreferences.getInstance();
-    final String? token = prefs!.getString(_authTokenKey);
-    final String? userJson = prefs!.getString(_userDataKey);
-    
+    final String? token = prefs?.getString(_authTokenKey);
+    final String? userJson = prefs?.getString(_userDataKey);
+
     logger.i(" Initial Token: $token");
 
     if (token != null && userJson != null) {
@@ -42,27 +43,35 @@ class AuthController extends StateNotifier<LoginResponse?> {
   }
 
   /// **Get Token Synchronously**
-  String? get token =>  prefs?.getString(_authTokenKey);
+  String? get token => prefs?.getString(_authTokenKey);
 
-  Future<bool> login(String phone, String password) async {
-    logger.i(" Attempting login for phone: $phone");
+  Future<bool> login(String phone, String password, WidgetRef ref) async {
+    logger.i(" Attempting login for phone: $phone $password");
 
-    LoginResponse? loginResponse = await _apiService.login(phone, password);
-    if (loginResponse != null) {
-      await _saveUserData(loginResponse);
-      state = loginResponse;
-      return true;
+    try {
+      LoginResponse? loginResponse = await _apiService.login(phone, password);
+      if (loginResponse != null) {
+        await _saveUserData(loginResponse, ref);
+        state = loginResponse;
+        return true;
+      }
+    } 
+    catch (e) {
+      logger.e("Login failed: $e");
     }
     return false;
   }
 
-  Future<void> _saveUserData(LoginResponse loginResponse) async {
-    await prefs!.setString(_authTokenKey, loginResponse.token);
-    await prefs!.setString(_userDataKey, jsonEncode(loginResponse.toJson()));
+  Future<void> _saveUserData(LoginResponse loginResponse,WidgetRef ref) async {
+    if (prefs != null) {
+      await prefs!.setString(_authTokenKey, loginResponse.token); ///token
+      ref.read(sampleProvider.notifier).saveToken(loginResponse.token);///token
+      await prefs!.setString(_userDataKey, jsonEncode(loginResponse.toJson()));///userData
 
-    AuthService().storeToken(loginResponse.token.toString());
-
-    logger.i(" User login state saved: ${loginResponse.toJson()}");
+      logger.i(" User login state saved: ${loginResponse.toJson()}");
+    } else {
+      logger.e("SharedPreferences not initialized.");
+    }
   }
 
   Future<void> logout() async {

@@ -43,6 +43,7 @@ class PaymentsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Payments"),
+        backgroundColor: Colors.white,
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list))],
       ),
       body: Padding(

@@ -1,13 +1,23 @@
 import 'package:classwix_orbit/core/themes/theme.dart';
+import 'package:classwix_orbit/widgets/ViewScreen/home_screen_audio.dart';
+import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'controller/auth_controller.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
 
 var logger = Logger();
+
+// void main()
+// {
+//    WidgetsFlutterBinding.ensureInitialized();
+//   runApp(
+//   MaterialApp(
+//     home: HomeScreen(),
+//   ));
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +27,9 @@ Future<void> main() async {
   logger.i("Initial Token: $token");
 
   runApp(
-    ProviderScope(
+     ProviderScope(
       child: MyApp(tkn: token),
+      // child: HomeScreen(),
     ),
   );
 }
@@ -29,11 +40,17 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    logger.i("User login status token: $tkn");
+    // final sampleToken = ref.watch(sampleProvider).value.toString();
+    final sampleToken = ref.watch(sampleProvider);
+    logger.i("User login status token: $tkn and $sampleToken");
+
     return MaterialApp(
       theme: appTheme,
+
       debugShowCheckedModeBanner: false,
-      initialRoute: tkn == null ? Routes.initial : Routes.homePage,
+      initialRoute: Routes.initial,
+      // initialRoute: tkn == null ? Routes.initial : Routes.homePage,
+      // initialRoute:  sampleToken == null  ? SplashScreen() : (sampleToken.isEmpty ? Routes.initial : Routes.homePage),
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
