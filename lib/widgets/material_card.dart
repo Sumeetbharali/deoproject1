@@ -1,4 +1,3 @@
-import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
 import 'material_viewer.dart';
