@@ -1,48 +1,53 @@
 import 'dart:convert';
 
 import 'package:classwix_orbit/core/constants/colors.dart';
+import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../main.dart';
 
-class LiveInformation extends StatefulWidget {
+class LiveInformation extends ConsumerStatefulWidget {
   final TextEditingController linkController;
   final TextEditingController timeController;
   final int groupId;
 
-  const LiveInformation({super.key, required this.linkController, required this.timeController, required this.groupId});
+  const LiveInformation(
+      {super.key,
+      required this.linkController,
+      required this.timeController,
+      required this.groupId});
 
   @override
-  State<LiveInformation> createState() => _LiveInformationState();
+  _LiveInformationState createState() => _LiveInformationState();
 }
 
-class _LiveInformationState extends State<LiveInformation> {
+class _LiveInformationState extends ConsumerState<LiveInformation> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchLiveClassLink();
+  }
+
   void _fetchLiveClassLink() async {
-    String? url =
-        "https://api.classwix.com/api/groups/${widget.groupId}/live-class";
+    String? url = "https://api.classwix.com/api/groups/${widget.groupId}/live-class";
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       widget.linkController.text = jsonDecode(response.body)['live_class_link'];
-      logger.i("Hari ${widget.linkController.text}");
     }
   }
 
   Future<void> submitLiveClassLink(
       String liveClassLink, String classTime) async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? tokenCred = prefs.getString('token');
+     final authToken = ref.watch(sampleProvider);  
     String? url =
         "https://api.classwix.com/api/groups/${widget.groupId}/live-class";
-    String token = "Bearer ${tokenCred.toString()}";
-
     try {
       final response = await http.post(
         Uri.parse(url),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
+          "Authorization": "Bearer $authToken",
         },
         body: jsonEncode({
           "live_class_link": liveClassLink,
@@ -173,12 +178,6 @@ class _LiveInformationState extends State<LiveInformation> {
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchLiveClassLink();
   }
 
   @override

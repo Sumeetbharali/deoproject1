@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<String> imageUrls = [];
   List<Map<String, dynamic>> classGroups = [];
   bool isLoading = true;
   bool hasError = false;
@@ -20,19 +22,47 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    fetchCarousels();
     fetchGroups();
+  }
+
+  Future<void> fetchCarousels() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? tokenCred = prefs.getString('token');
+    const String url = "https://api.classwix.com/api/admin/config/carousels";
+    String token = "Bearer ${tokenCred.toString()}";
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {"Authorization": token},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<dynamic> carousels = data["carousels"];
+
+        setState(() {
+          imageUrls =
+              carousels.map<String>((carousel) => carousel["path"]).toList();
+        });
+      } else {
+        throw Exception("Failed to load carousels");
+      }
+    } catch (e) {
+      print("Error fetching carousels: $e");
+    }
   }
 
   Future<void> fetchGroups() async {
     print('Fetching data...');
 
     setState(() {
-      isLoading = true; // Start loading
-      hasError = false; // Reset error state
+      isLoading = true;
+      hasError = false;
     });
 
-    await Future.delayed(
-        const Duration(seconds: 1)); // Simulating smooth refresh
+    await Future.delayed(const Duration(seconds: 1));
 
     final prefs = await SharedPreferences.getInstance();
     final String? tokenCred = prefs.getString('token');
@@ -64,16 +94,15 @@ class _HomePageState extends State<HomePage> {
             };
           }).toList();
           isLoading = false;
-          hasError = false; // Data loaded successfully
+          hasError = false;
         });
       } else {
         throw Exception("Failed to load data");
       }
     } catch (e) {
-      print("Error: $e");
       setState(() {
         isLoading = false;
-        hasError = true; // Mark error state
+        hasError = true;
       });
     }
   }
@@ -82,16 +111,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-          onRefresh: () async {
-        await fetchGroups(); // Ensure refresh actually calls fetchGroups
-      },  
+        onRefresh: () async {
+          await fetchCarousels();
+          await fetchGroups();
+        },
         child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
-                  if (hasError) // Display error state but keep RefreshIndicator usable
+                  if (hasError)
                     Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -102,14 +131,16 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 10),
                           ElevatedButton(
-                            onPressed: fetchGroups, // Retry manually
+                            onPressed: () {
+                              fetchCarousels();
+                              fetchGroups();
+                            },
                             child: const Text("Retry"),
                           ),
                         ],
                       ),
                     )
-                  else if (classGroups
-                      .isEmpty) // Show message when no groups exist
+                  else if (classGroups.isEmpty)
                     const Center(
                       child: Text(
                         "No groups assigned yet",
@@ -120,84 +151,48 @@ class _HomePageState extends State<HomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Today's Schedule",
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                        if (imageUrls.isNotEmpty)
+                          CarouselSlider(
+                            options: CarouselOptions(
+                              height: 140,
+                              autoPlay: true,
+                              enlargeCenterPage: true,
+                              viewportFraction: 1.0,
                             ),
-                            TextButton(
-                                onPressed: () {}, child: const Text("View All"))
-                          ],
-                        ),
-                        Container(
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: CachedNetworkImage(
-                                imageUrl:
-                                    "https://img.freepik.com/free-vector/learning-concept-illustration_114360-6186.jpg",
-                                fit: BoxFit.cover,
-                                width: 60,
-                                height: 60,
-                                placeholder: (context, url) =>
-                                    const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error,
-                                        size: 40, color: Colors.red),
-                              ),
-                            ),
-                            title: const Text(
-                              "Mathematics",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text("Dr. Sarah Johnson"),
-                                const SizedBox(height: 4),
-                                LinearProgressIndicator(
-                                  value: 0.5,
-                                  backgroundColor: Colors.grey.shade300,
-                                  color: Colors.blue,
+                            items: imageUrls.map((imageUrl) {
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            trailing: ElevatedButton(
-                              onPressed: () {},
-                              child: const Text("Join Class"),
-                            ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: CachedNetworkImage(
+                                    imageUrl: imageUrl,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 120,
+                                    placeholder: (context, url) => const Center(
+                                        child: CircularProgressIndicator()),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error,
+                                            size: 40, color: Colors.red),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Quick Access Icons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildQuickAccessIcon(
-                                Icons.assignment, "Assignments"),
-                            _buildQuickAccessIcon(Icons.book, "Materials"),
-                            _buildQuickAccessIcon(Icons.chat, "Discussion"),
-                            _buildQuickAccessIcon(
-                                Icons.calendar_today, "Calendar"),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
+
+                        const SizedBox(height: 55),
                         // My Class Groups Section
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -224,20 +219,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
       ),
-    );
-  }
-
-  Widget _buildQuickAccessIcon(IconData icon, String label) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: Colors.blue.shade100,
-          child: Icon(icon, color: Colors.blue, size: 28),
-        ),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 14)),
-      ],
     );
   }
 

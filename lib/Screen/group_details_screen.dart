@@ -4,10 +4,10 @@ import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
 import 'package:classwix_orbit/core/constants/copies.dart';
 import 'package:classwix_orbit/core/constants/styles.dart';
+import 'package:classwix_orbit/core/utils/widgets/custom_snack_bar.dart';
 import 'package:classwix_orbit/widgets/file_picker.dart';
 import 'package:classwix_orbit/widgets/group_information.dart';
 import 'package:classwix_orbit/widgets/material_card.dart';
-import 'package:classwix_orbit/widgets/material_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,7 +43,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   TextEditingController linkController = TextEditingController();
   TextEditingController timeController = TextEditingController();
 
-  Future<void> pickFile(String type) async {
+  Future<File?> pickFile(String type) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: type == "photo"
           ? FileType.image
@@ -60,6 +60,11 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
         if (type == "pdf") selectedPdf = File(result.files.single.path!);
       });
     }
+    return type == "photo"
+        ? selectedPhoto
+        : type == "audio"
+            ? selectedAudio
+            : selectedPdf;
   }
 
   bool isLoading = true;
@@ -68,7 +73,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchData(); 
+    fetchData();
   }
 
   Future<bool> checkInternetConnection() async {
@@ -236,7 +241,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
-                        height: 400, 
+                        height: 400,
                         child: _buildTabView(),
                       ),
                     ],
@@ -282,6 +287,30 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            const Text("Class Code: ",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Container(
+              margin: const EdgeInsets.only(left: 2),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                border:
+                    Border.all(style: BorderStyle.solid, color: Colors.grey),
+              ),
+              child: Text(
+                classCode,
+                style: const TextStyle(
+                  color: Colors.blueGrey,
+                ),
+                softWrap: true,
+              ),
+            ),
+          ],
+        ),
         if (classStarted) ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -328,30 +357,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
 
           //
         ] else ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Text("Class Code: ",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              Container(
-                margin: const EdgeInsets.only(left: 2),
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border:
-                      Border.all(style: BorderStyle.solid, color: Colors.grey),
-                ),
-                child: Text(
-                  classCode,
-                  style: const TextStyle(
-                    color: Colors.blueGrey,
-                  ),
-                  softWrap: true,
-                ),
-              ),
-            ],
-          ),
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: Container(
@@ -455,8 +460,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
         trailing: IconButton(
           icon: const Icon(Icons.open_in_new, color: Colors.blue),
           onPressed: () => launch((video["video_path"])),
-          // onPressed: () => launch(
-          //     'https://drive.google.com/file/d/1FtlfKDvJphiKQveMkaIrH8awI_244ewJ/view?usp=sharing'),
         ),
       ),
     );
@@ -498,12 +501,16 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     });
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Files uploaded successfully!")),
+      CustomSnackBar.showSnackBar(
+        context,
+        "Files uploaded successfully!",
+        SnackBarType.success,
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to upload files.")),
+      CustomSnackBar.showSnackBar(
+        context,
+        "Failed to upload files.",
+        SnackBarType.failure,
       );
     }
   }
@@ -519,7 +526,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 10.0,bottom: 5),
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 5),
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.5,
                     height: 37,
@@ -538,49 +545,91 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                         showDialog(
                           context: context,
                           builder: (BuildContext dialogContext) {
-                            return AlertDialog(
-                              title: const Text("Upload Files"),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Filepicker(
-                                      label: "Photo",
-                                      file: selectedPhoto,
-                                      onTap: () => pickFile("photo")),
-                                  Filepicker(
-                                      label: "Audio",
-                                      file: selectedAudio,
-                                      onTap: () => pickFile("audio")),
-                                  Filepicker(
-                                      label: "PDF",
-                                      file: selectedPdf,
-                                      onTap: () => pickFile("pdf")),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(dialogContext),
-                                  child: const Text("Cancel"),
-                                ),
-                                ElevatedButton(
-                                  onPressed: isUploading
-                                      ? null // Disable button while uploading
-                                      : () async {
-                                          await uploadFiles(dialogContext);
-                                          Navigator.pop(dialogContext);
+                            return StatefulBuilder(
+                              // ✅ Use StatefulBuilder to update UI inside Dialog
+                              builder: (context, setState) {
+                                return AlertDialog(
+                                  title: const Text("Upload Files"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Filepicker(
+                                        label: selectedPhoto != null
+                                            ? "Photo Selected"
+                                            : "Select Photo",
+                                        file: selectedPhoto,
+                                        onTap: () async {
+                                          final file = await pickFile("photo");
+                                          if (file != null) {
+                                            setState(() {
+                                              selectedPhoto =
+                                                  file; // ✅ Update UI
+                                            });
+                                          }
                                         },
-                                  child: isUploading
-                                      ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      : const Text("Submit"),
-                                ),
-                              ],
+                                      ),
+                                      Filepicker(
+                                        label: selectedAudio != null
+                                            ? "Audio Selected"
+                                            : "Select Audio",
+                                        file: selectedAudio,
+                                        onTap: () async {
+                                          final file = await pickFile("audio");
+                                          if (file != null) {
+                                            setState(() {
+                                              selectedAudio =
+                                                  file; 
+                                            });
+                                          }
+                                        },
+                                      ),
+                                      Filepicker(
+                                        label: selectedPdf != null
+                                            ? "PDF Selected"
+                                            : "Select PDF",
+                                        file: selectedPdf,
+                                        onTap: () async {
+                                          final file = await pickFile("pdf");
+                                          if (file != null) {
+                                            setState(() {
+                                              selectedPdf = file; 
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        selectedPhoto = null;
+                                        selectedAudio = null;
+                                        selectedPdf = null;
+                                        Navigator.pop(dialogContext);
+                                      },
+                                      child: const Text("Cancel"),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: isUploading
+                                          ? null // Disable button while uploading
+                                          : () async {
+                                              await uploadFiles(dialogContext);
+                                              Navigator.pop(dialogContext);
+                                            },
+                                      child: isUploading
+                                          ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : const Text("Submit"),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           },
                         );
@@ -600,7 +649,6 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                 ),
                 ...materialsList.map((material) {
                   return MaterialCard(material: material);
-                  // return MaterialViewer(material: material,);
                 })
               ],
             ),

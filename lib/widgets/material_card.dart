@@ -16,7 +16,6 @@ class _MaterialCardState extends State<MaterialCard> {
   String getName = "";
   @override
   void initState() {
-    // TODO: implement initState
     extractDetails(widget.material["pdf"]);
     super.initState();
   }
@@ -33,7 +32,7 @@ class _MaterialCardState extends State<MaterialCard> {
     // Extract file name
     RegExp nameRegex = RegExp(r'\/([^\/]+)\.(pdf|mp3|wav|jpg|png)$');
     String? name = nameRegex.firstMatch(url)?.group(1);
-    logger.i("$time + $name");
+
 
     setState(() {
       getTime = time ?? "Unknown Date";

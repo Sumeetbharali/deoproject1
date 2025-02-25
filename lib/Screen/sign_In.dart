@@ -1,6 +1,7 @@
 import 'package:classwix_orbit/core/constants/colors.dart';
 import 'package:classwix_orbit/core/constants/copies.dart';
 import 'package:classwix_orbit/core/constants/images.dart';
+import 'package:classwix_orbit/core/utils/widgets/custom_snack_bar.dart';
 import 'package:classwix_orbit/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,6 +47,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     if (success) {
+      CustomSnackBar.showSnackBar(
+          context, "You are successfully logged in", SnackBarType.success);
       Navigator.of(context)
           .pushNamedAndRemoveUntil(Routes.homePage, (route) => false);
     } else {

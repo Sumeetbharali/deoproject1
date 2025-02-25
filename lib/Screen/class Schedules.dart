@@ -233,18 +233,21 @@
 // }
 
 import 'dart:convert';
+import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
+import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TimetableScreen extends StatefulWidget {
+class TimetableScreen extends ConsumerStatefulWidget {
   const TimetableScreen({super.key});
 
   @override
   _TimetableScreenState createState() => _TimetableScreenState();
 }
 
-class _TimetableScreenState extends State<TimetableScreen> {
+class _TimetableScreenState extends ConsumerState<TimetableScreen> {
   List<ScheduleEvent> events = [];
   bool isLoading = true;
   final ScrollController _scrollController = ScrollController();
@@ -257,11 +260,15 @@ class _TimetableScreenState extends State<TimetableScreen> {
 
   // 📌 Fetch Timetable from API
   Future<void> fetchTimetable() async {
+    // final authToken = ref.watch(sampleProvider);
+    // logger.f("get $authToken");
+    // print(authToken);
     final response = await http.get(
       Uri.parse("https://api.classwix.com/api/micro/routines"),
       headers: {
         "Authorization":
             "Bearer 609|1jlY8sIX0WDq51JJLLEV8mSUGETnMMgJx2CXK6AC75d77f5a",
+            // "Bearer $authToken"
       },
     );
 
@@ -391,7 +398,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
                   day.day.toString(),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.blue : Colors.black,
+                    color: isSelected ? Colors.blue : AppColors.black,
                   ),
                 ),
               ),

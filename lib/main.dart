@@ -1,5 +1,4 @@
 import 'package:classwix_orbit/core/themes/theme.dart';
-import 'package:classwix_orbit/widgets/ViewScreen/home_screen_audio.dart';
 import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,17 +39,13 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final sampleToken = ref.watch(sampleProvider).value.toString();
     final sampleToken = ref.watch(sampleProvider);
     logger.i("User login status token: $tkn and $sampleToken");
 
     return MaterialApp(
       theme: appTheme,
-
       debugShowCheckedModeBanner: false,
       initialRoute: Routes.initial,
-      // initialRoute: tkn == null ? Routes.initial : Routes.homePage,
-      // initialRoute:  sampleToken == null  ? SplashScreen() : (sampleToken.isEmpty ? Routes.initial : Routes.homePage),
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
