@@ -9,14 +9,6 @@ import 'routes/routes.dart';
 
 var logger = Logger();
 
-// void main()
-// {
-//    WidgetsFlutterBinding.ensureInitialized();
-//   runApp(
-//   MaterialApp(
-//     home: HomeScreen(),
-//   ));
-// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +20,6 @@ Future<void> main() async {
   runApp(
      ProviderScope(
       child: MyApp(tkn: token),
-      // child: HomeScreen(),
     ),
   );
 }

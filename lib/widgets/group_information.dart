@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
 
 class GroupInformation extends StatefulWidget {
-  final Map<String, dynamic> groupDetails;
+  final dynamic groupDetails;
   const GroupInformation({super.key, required this.groupDetails});
 
   @override

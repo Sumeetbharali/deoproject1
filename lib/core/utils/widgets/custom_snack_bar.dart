@@ -18,7 +18,9 @@ class CustomSnackBar {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: ExcludeSemantics(
+            child: Text(message),
+          ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: backgroundColor,
           duration: const Duration(seconds: 3),

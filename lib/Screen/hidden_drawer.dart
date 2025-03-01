@@ -1,12 +1,11 @@
-import 'package:classwix_orbit/Screen/Group.dart';
-import 'package:classwix_orbit/Screen/Payroll%20Details.dart';
+import 'package:classwix_orbit/Screen/Home/home.dart';
+import 'package:classwix_orbit/Screen/MyGroup/group_screen.dart';
+import 'package:classwix_orbit/Screen/Payment/PaymentsScreen.dart';
 import 'package:classwix_orbit/Screen/class%20Schedules.dart';
-import 'package:classwix_orbit/Screen/profile_page.dart';
+import 'package:classwix_orbit/Screen/Profile/profile_page.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
-
-import 'home.dart';
 
 class HiddenDrawer extends StatefulWidget {
   const HiddenDrawer({super.key});
@@ -96,33 +95,22 @@ class _HiddenDrawerState extends State<HiddenDrawer> {
         return false;
       },
       child: HiddenDrawerMenu(
-        backgroundColorAppBar: AppColors.appbar,
+        backgroundColorAppBar: AppColors.appbar.withOpacity(0.8),
         backgroundColorMenu: Colors.blueAccent,
         isTitleCentered: true,
-        backgroundColorContent: Colors.white,
-
+        enableShadowItensMenu: true,
         tittleAppBar: Padding(
           padding: const EdgeInsets.only(right: 50.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-
-                "assets/logo/appbar_logo.jpg", // Your App Logo
-                height: 40, // Adjust as needed
+                "assets/logo/appbar_logo.png",
+                height: 40, 
               ),
-              // const Text(
-              //   'ClassWix',
-              //   style: TextStyle(
-              //       letterSpacing: 1,
-              //       color: AppColors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: 20),
-              // ),
             ],
           ),
         ),
-        
         screens: _pages,
         initPositionSelected: 0,
         slidePercent: 40,

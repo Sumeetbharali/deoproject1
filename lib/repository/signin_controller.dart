@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:http/http.dart' as http;
 import '../model/signmodel.dart';
 import '../core/constants/api_endpoint.dart';
+import '../provider/authentication.dart';
 
 class ApiService {
   final String apiUrl = '$mainUrl/signin';

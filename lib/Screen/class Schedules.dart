@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:classwix_orbit/core/constants/api_endpoint.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
+import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,19 +24,17 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     fetchTimetable();
   }
 
-  // 📌 Fetch Timetable from API
+ 
   Future<void> fetchTimetable() async {
-    // final authToken = ref.watch(sampleProvider);
-    // logger.f("get $authToken");
-    // print(authToken);
+    final authToken = ref.read(sampleProvider);  //use read boii 😁
     final response = await http.get(
-      Uri.parse("https://api.classwix.com/api/micro/routines"),
+      Uri.parse("$mainUrl/micro/routines"),
       headers: {
         "Authorization":
-            "Bearer 609|1jlY8sIX0WDq51JJLLEV8mSUGETnMMgJx2CXK6AC75d77f5a",
-            // "Bearer $authToken"
+            "Bearer $authToken",
       },
     );
+    
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -84,7 +84,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     }
   }
 
-  // 📌 Scroll to First Event of the Day
+  // Scroll to First Event of the Day
   void _scrollToEvent() {
     if (events.isEmpty) return;
 
@@ -188,7 +188,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     }
 
     return ListView.builder(
-      controller: _scrollController, // Attach ScrollController
+      controller: _scrollController, 
       itemCount: 13, // 08:00 to 20:00
       itemBuilder: (context, index) {
         final hour = index + 8;

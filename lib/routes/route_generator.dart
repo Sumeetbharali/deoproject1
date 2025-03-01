@@ -1,9 +1,9 @@
-import 'package:classwix_orbit/Screen/sign_up.dart';
+import 'package:classwix_orbit/Screen/Auth/register/sign_up.dart';
 import 'package:classwix_orbit/Screen/splash_screen.dart';
 
 import '../Screen/hidden_drawer.dart';
 import 'package:flutter/material.dart';
-import '../Screen/sign_In.dart';
+import '../Screen/Auth/login/sign_In.dart';
 import '../error/screen.dart';
 import 'routes.dart';
 
