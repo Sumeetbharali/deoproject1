@@ -48,7 +48,7 @@ class GroupDetailsScreen extends ConsumerWidget {
                 : ListView(
                     padding: const EdgeInsets.all(16.0),
                     children: [
-                      GroupClasscode(groupId:groupId),
+                      GroupClasscode(groupId: groupId),
                       const SizedBox(height: 15),
                       if (groupState.groupDetails != null)
                         GroupInformation(
@@ -56,8 +56,9 @@ class GroupDetailsScreen extends ConsumerWidget {
                       const SizedBox(height: 20),
                       LiveInformation(groupId: groupId),
                       const SizedBox(height: 20),
-                      SizedBox(
-                        height: 400,
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 50),
+                        height: 500,
                         child: _buildTabView(
                             groupState.videoList, groupState.materialsList),
                       ),

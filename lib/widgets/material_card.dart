@@ -32,7 +32,6 @@ class _MaterialCardState extends State<MaterialCard> {
     RegExp nameRegex = RegExp(r'\/([^\/]+)\.(pdf|mp3|wav|jpg|png)$');
     String? name = nameRegex.firstMatch(url)?.group(1);
 
-
     setState(() {
       getTime = time ?? "Unknown Date";
       getName = name ?? "Unknown File";
@@ -42,6 +41,7 @@ class _MaterialCardState extends State<MaterialCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
+    
       shape: RoundedRectangleBorder(
           side: const BorderSide(width: 1, color: AppColors.purple),
           borderRadius: BorderRadius.circular(5)),
@@ -58,11 +58,13 @@ class _MaterialCardState extends State<MaterialCard> {
                 Text(
                   getName,
                   style: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold,fontSize: 10),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10),
                 ),
                 Text(
                   getTime,
-                  style: const TextStyle(color: Colors.black,fontSize: 10),
+                  style: const TextStyle(color: Colors.black, fontSize: 10),
                 )
               ],
             ),

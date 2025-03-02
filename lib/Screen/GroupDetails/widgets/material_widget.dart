@@ -53,7 +53,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
     if (isUploading) return; // Prevent multiple uploads
 
     setState(() {
-      isUploading = true; // Start uploading, show loader
+      isUploading = true; // Start uploading
     });
 
     final authToken = ref.read(sampleProvider);
@@ -80,7 +80,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
     var response = await request.send();
 
     setState(() {
-      isUploading = false; // Stop uploading, hide loader
+      isUploading = false; // Stop uploading
     });
 
     if (response.statusCode == 200) {
@@ -129,7 +129,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                           context: context,
                           builder: (BuildContext dialogContext) {
                             return StatefulBuilder(
-                              // ✅ Use StatefulBuilder to update UI inside Dialog
+                              
                               builder: (context, setState) {
                                 return AlertDialog(
                                   title: const Text("Upload Files"),
@@ -231,7 +231,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                 ),
                 ...widget.materialList.map((material) {
                   return MaterialCard(material: material);
-                })
+                }),
               ],
             ),
           );

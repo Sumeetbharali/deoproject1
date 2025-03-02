@@ -63,10 +63,14 @@ dev_dependencies:
   carousel_slider: ^5.0.0
   flutter_launcher_icons: ^0.14.3
 
-flutter_icons:
+flutter_launcher_icons:
   ios: true
   android: true
   image_path: "assets/logo/applogo.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  adaptive_icon_background: "#e76030"
+  adaptive_icon_foreground: "assets/logo/applogo.png"
 
 flutter:
   uses-material-design: true
