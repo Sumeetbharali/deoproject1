@@ -2,7 +2,6 @@ import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/signmodel.dart';
-import '../provider/authentication.dart';
 import '../repository/signin_controller.dart';
 import 'dart:convert';
 

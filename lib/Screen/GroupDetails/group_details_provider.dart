@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:classwix_orbit/Screen/GroupDetails/group_details_model.dart';
 import 'package:classwix_orbit/core/constants/api_endpoint.dart';
-import 'package:classwix_orbit/provider/authentication.dart';
 import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;

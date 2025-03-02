@@ -6,9 +6,9 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'routes/route_generator.dart';
 import 'routes/routes.dart';
+import 'package:flutter/services.dart';
 
 var logger = Logger();
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,22 +16,23 @@ Future<void> main() async {
   final String? token = prefs.getString('token');
 
   logger.i("Initial Token: $token");
-
-  runApp(
-     ProviderScope(
-      child: MyApp(tkn: token),
-    ),
-  );
+  
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(const ProviderScope(
+      child: MyApp(),
+    ));
+  });
 }
 
 class MyApp extends ConsumerWidget {
-  final String? tkn;
-  const MyApp({required this.tkn, super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sampleToken = ref.watch(sampleProvider);
-    logger.i("User login status token: $tkn and $sampleToken");
+    ref.read(sampleProvider); //load the token
 
     return MaterialApp(
       theme: appTheme,

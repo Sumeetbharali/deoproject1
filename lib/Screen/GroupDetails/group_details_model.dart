@@ -15,8 +15,7 @@ class GroupDetailsState {
     this.liveClassLink,
   });
 
-  factory GroupDetailsState.loading() =>
-      GroupDetailsState(isLoading: true, hasError: false);
+  factory GroupDetailsState.loading() =>GroupDetailsState(isLoading: true, hasError: false);
   factory GroupDetailsState.error() =>
       GroupDetailsState(isLoading: false, hasError: true);
   factory GroupDetailsState.loaded(

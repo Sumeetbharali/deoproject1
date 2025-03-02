@@ -4,7 +4,6 @@ import 'package:classwix_orbit/Screen/GroupDetails/widgets/group_classcode_widge
 import 'package:classwix_orbit/Screen/GroupDetails/widgets/material_widget.dart';
 import 'package:classwix_orbit/Screen/GroupDetails/widgets/videolist_widget.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
-import 'package:classwix_orbit/provider/authentication.dart';
 import 'package:classwix_orbit/widgets/group_information.dart';
 import 'package:classwix_orbit/widgets/live_information.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,6 @@ class GroupDetailsScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          logger.i(groupId);
           ref.read(groupDetailsProvider(groupId).notifier).fetchData();
           ref.read(groupDetailsProvider(groupId).notifier).fetchLiveClassLink();
         },

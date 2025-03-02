@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/signmodel.dart';
 import '../core/constants/api_endpoint.dart';
-import '../provider/authentication.dart';
+import '../provider/sample_provider.dart';
 
 class ApiService {
   final String apiUrl = '$mainUrl/signin';

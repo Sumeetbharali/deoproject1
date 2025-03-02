@@ -1,6 +1,7 @@
+import 'package:classwix_orbit/Screen/Profile/widgets/developerInfo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../core/constants/copies.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -11,7 +12,7 @@ class AboutUsScreen extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("About DeoLang"),
+        title: const Text(AppCopies.aboutdeolang),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -19,10 +20,11 @@ class AboutUsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
           child: Column(
+            
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "About DeoLang",
+                AppCopies.aboutdeolang,
                 style: GoogleFonts.lato(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -31,7 +33,7 @@ class AboutUsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "Founded in Assam, India, DeoLang is a forward-thinking IT company committed to delivering high-quality software solutions. Our team of experienced developers, designers, and IT professionals work collaboratively to ensure that we meet and exceed our clients' expectations.",
+                AppCopies.profiletext1,
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.white70,
@@ -40,21 +42,17 @@ class AboutUsScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               _buildSection(
-                title: "Our Vision",
+                title: AppCopies.visiontxt,
                 icon: Icons.visibility,
-                description:
-                    "To be a leading IT service provider, recognized for our innovative solutions and exceptional customer service.",
+                description: AppCopies.visiondesc,
               ),
 
-         
               _buildSection(
-                title: "Our Mission",
+                title: AppCopies.missiontxt,
                 icon: Icons.rocket_launch,
-                description:
-                    "To empower businesses through technology by providing tailored software solutions that drive efficiency and growth.",
+                description: AppCopies.missiondesc,
               ),
 
-             
               _buildSection(
                 title: "Our Values",
                 icon: Icons.diamond,
@@ -74,7 +72,7 @@ class AboutUsScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               // Developed By Section
-              _buildDeveloperInfo(),
+              const DeveloperinfoWidget()
             ],
           ),
         ),
@@ -136,64 +134,6 @@ class AboutUsScreen extends StatelessWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDeveloperInfo() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 50.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Developed by",
-            style: GoogleFonts.lato(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Hari Hara Sudhan\nKGISL Institute of Technology\nCoimbatore, Tamil Nadu",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "📧 Contact: sudhanabirami007@gmail.com",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 10),
-          _buildLink(
-              "🔗 LinkedIn", "https://www.linkedin.com/in/hari-hara-sudhans/"),
-          _buildLink("💻 GitHub", "https://github.com/HariHara-sn"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLink(String label, String url) {
-    return GestureDetector(
-      onTap: () async {
-        final Uri link = Uri.parse(url);
-        if (await canLaunchUrl(link)) {
-          await launchUrl(link, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          fontSize: 16,
-          color: Colors.blueAccent,
-          decoration: TextDecoration.underline,
-        ),
       ),
     );
   }

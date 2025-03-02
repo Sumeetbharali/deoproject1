@@ -1,8 +1,6 @@
 import 'dart:math';
-
 import 'package:classwix_orbit/Screen/GroupDetails/group_details_provider.dart';
 import 'package:classwix_orbit/core/constants/styles.dart';
-import 'package:classwix_orbit/provider/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
@@ -57,7 +55,6 @@ class _GroupClasscodeState extends ConsumerState<GroupClasscode> {
   Widget build(BuildContext context) {
   TextEditingController linkController = TextEditingController();
   final groupState = ref.watch(groupDetailsProvider(widget.groupId));
-    logger.f(groupState.liveClassLink);
     linkController.text = groupState.liveClassLink.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -112,12 +109,11 @@ class _GroupClasscodeState extends ConsumerState<GroupClasscode> {
                       ),
                     ),
                     onPressed: () {
-                      logger.i(linkController.text);
                       launch(linkController.text);
                     },
                     child: const Center(
                       child: Text(
-                        "Join Class", // Button label
+                        "Join Class", 
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -130,8 +126,6 @@ class _GroupClasscodeState extends ConsumerState<GroupClasscode> {
               ),
             ],
           ),
-
-          //
         ] else ...[
           Padding(
             padding: const EdgeInsets.only(top: 10.0),

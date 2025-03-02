@@ -1,5 +1,5 @@
 import 'package:classwix_orbit/core/constants/colors.dart';
-import 'package:classwix_orbit/main.dart';
+import 'package:classwix_orbit/core/utils/widgets/custom_snack_bar.dart';
 import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -45,7 +45,6 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final List<dynamic> apiPayments = data["payments"];
-        
 
         setState(() {
           allPayments = apiPayments.map((payment) {
@@ -70,7 +69,8 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
         throw Exception("Failed to load payments");
       }
     } catch (e) {
-      logger.e("Error fetching payments: $e");
+      CustomSnackBar.showSnackBar(
+          context, "Error fetching payments: $e", SnackBarType.failure);
       setState(() {
         isLoading = false;
       });

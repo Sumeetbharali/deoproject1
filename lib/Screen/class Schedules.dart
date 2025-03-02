@@ -26,7 +26,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
  
   Future<void> fetchTimetable() async {
-    final authToken = ref.read(sampleProvider);  //use read boii 😁
+    final authToken = ref.read(sampleProvider); 
     final response = await http.get(
       Uri.parse("$mainUrl/micro/routines"),
       headers: {

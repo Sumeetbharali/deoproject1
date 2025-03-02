@@ -16,7 +16,7 @@ class CustomGeneralcard extends ConsumerWidget {
       title: Text(title),
       trailing: Icon(icon, color: Colors.purple),
       onTap: () async {
-        if (title == 'Forget Password' || title == 'Change Password') {
+        if (title == 'Forget Password') {
           try {
           } catch (e) {
             CustomSnackBar.showSnackBar(

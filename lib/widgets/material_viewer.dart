@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:classwix_orbit/core/constants/images.dart';
 import 'package:classwix_orbit/widgets/ViewScreen/home_screen_audio.dart';
 import 'package:classwix_orbit/widgets/ViewScreen/pdf_viewer.dart';
 import 'package:flutter/material.dart';
@@ -32,13 +33,13 @@ class MaterialViewer extends StatelessWidget {
     String assetPath;
     switch (type.toLowerCase()) {
       case "photo":
-        assetPath = "assets/img_asset.jpg";
+        assetPath = AppImages.imgIcon;
         break;
       case "audio":
-        assetPath = "assets/audio_assert.jpg";
+        assetPath = AppImages.aduioIcon;
         break;
       case "pdf":
-        assetPath = "assets/pdf_assert.jpg";
+        assetPath = AppImages.pdfIcon;
         break;
       default:
         assetPath = "assets/icons/default.png";
@@ -65,17 +66,6 @@ class MaterialViewer extends StatelessWidget {
 }
 
 void _showAudioPlayer(BuildContext context, String audioUrl) {
-  // Navigator.push(
-  //       context,
-  //       MaterialPageRoute(builder: (context) =>  HomeScreen(audioUrl: audioUrl,),)
-  //     );
-  // builder: (context) => AudioPlayerBottomSheet(url: audioUrl),
-  // showModalBottomSheet(
-
-  //   context: context,
-  //   builder: (context) => HomeScreen(audioUrl: audioUrl,),
-
-  // );
   showModalBottomSheet(
     context: context,
     isScrollControlled: true, 

@@ -1,6 +1,5 @@
 import 'package:classwix_orbit/Screen/GroupDetails/group_details_screen.dart';
 import 'package:classwix_orbit/Screen/MyGroup/group_model.dart';
-import 'package:classwix_orbit/Screen/group_details_screen.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
