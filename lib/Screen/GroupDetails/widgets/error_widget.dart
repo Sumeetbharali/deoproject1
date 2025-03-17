@@ -40,7 +40,7 @@ class GroupError extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: fetchData, // Retry on button press
+            onPressed: fetchData, 
             child: const Text("Retry"),
           ),
         ],

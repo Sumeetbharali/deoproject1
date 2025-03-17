@@ -17,7 +17,7 @@ class GroupDetailsNotifier extends StateNotifier<GroupDetailsState> {
   GroupDetailsNotifier(this.ref, this.groupId)
       : super(GroupDetailsState.loading()) {
     fetchData();
-    fetchLiveClassLink(); 
+    fetchLiveClassLink();
   }
 
   Future<void> fetchData() async {
@@ -32,6 +32,7 @@ class GroupDetailsNotifier extends StateNotifier<GroupDetailsState> {
           groupDetails, videoList, materialsList, state.liveClassLink);
     } catch (e) {
       state = GroupDetailsState.error();
+      logger.e(e.toString());
     }
   }
 
@@ -78,32 +79,34 @@ class GroupDetailsNotifier extends StateNotifier<GroupDetailsState> {
       throw Exception("Failed to fetch materials");
     }
   }
-Future<void> submitLiveClassLink(String liveClassLink, String classTime) async {
-  final authToken = ref.read(sampleProvider);
-  String url = "$mainUrl/groups/$groupId/live-class";
 
-  try {
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $authToken",
-      },
-      body: jsonEncode({
-        "live_class_link": liveClassLink,
-        "class_time": classTime,
-      }),
-    );
+  Future<void> submitLiveClassLink(
+      String liveClassLink, String classTime) async {
+    final authToken = ref.read(sampleProvider);
+    String url = "$mainUrl/groups/$groupId/live-class";
+    logger.e(classTime);
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $authToken",
+        },
+        body: jsonEncode({
+          "live_class_link": liveClassLink,
+          "class_time": classTime,
+        }),
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      state = state.copyWith(liveClassLink: liveClassLink);
-    } else {
-      throw Exception("Failed to save link: Server Error");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        state = state.copyWith(liveClassLink: liveClassLink);
+      } else {
+        throw Exception("Failed to save link: Server Error");
+      }
+    } catch (e) {
+      throw Exception("Error submitting live class link: $e");
     }
-  } catch (e) {
-    throw Exception("Error submitting live class link: $e");
   }
-}
 
   Future<void> fetchLiveClassLink() async {
     logger.f("Fetching live class link...");
@@ -126,7 +129,7 @@ Future<void> submitLiveClassLink(String liveClassLink, String classTime) async {
           groupDetails: state.groupDetails,
           videoList: state.videoList,
           materialsList: state.materialsList,
-          liveClassLink: liveClassLink, 
+          liveClassLink: liveClassLink,
         );
       } else {
         logger.e(
@@ -137,4 +140,3 @@ Future<void> submitLiveClassLink(String liveClassLink, String classTime) async {
     }
   }
 }
-

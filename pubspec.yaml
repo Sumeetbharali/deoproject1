@@ -49,6 +49,8 @@ dependencies:
   pdfx: ^2.8.0
   audioplayers: ^6.2.0
   google_fonts: ^6.2.1
+  flutter_slidable: ^4.0.0
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -82,13 +84,6 @@ flutter:
     # - assets/images/
     # - assets/audios/
     # - assets/icons/
-  #   - images/a_dot_ham.jpeg
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/to/asset-from-package
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

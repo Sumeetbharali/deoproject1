@@ -14,7 +14,7 @@ class LiveInformation extends ConsumerStatefulWidget {
 
 class _LiveInformationState extends ConsumerState<LiveInformation> {
   final TextEditingController linkController = TextEditingController();
-  final TextEditingController timeController = TextEditingController();
+  // final TextEditingController timeController = TextEditingController();
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _LiveInformationState extends ConsumerState<LiveInformation> {
       builder: (BuildContext context) {
         return LiveClassDialog(
           linkController: linkController,
-          timeController: timeController,
+          // timeController: timeController,
           groupId: widget.groupId,
         );
       },

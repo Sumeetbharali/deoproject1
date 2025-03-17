@@ -1,11 +1,9 @@
 import 'package:classwix_orbit/Screen/Profile/widgets/confirmation_dialog.dart';
 import 'package:classwix_orbit/Screen/Profile/widgets/profile_details.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
-import 'package:classwix_orbit/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controller/auth_controller.dart';
-import '../../provider/authentication.dart';
 import '../../provider/sample_provider.dart';
 import 'widgets/custom_generalcard.dart';
 

@@ -60,7 +60,7 @@ class MaterialViewer extends StatelessWidget {
         url.endsWith('.mp4')) {
       _showAudioPlayer(context, url);
     } else {
-      launchUrl(Uri.parse(url)); // Open in browser if unsupported
+      launchUrl(Uri.parse(url)); 
     }
   }
 }

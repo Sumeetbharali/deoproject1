@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/api_endpoint.dart';
 import '../../provider/sample_provider.dart';
 
-final groupControllerProvider = StateNotifierProvider<GroupController, List<GroupData>>(
+final groupControllerProvider =
+    StateNotifierProvider<GroupController, List<GroupData>>(
   (ref) => GroupController(ref),
 );
 
@@ -27,7 +28,6 @@ class GroupController extends StateNotifier<List<GroupData>> {
     final authToken = ref.read(sampleProvider);
     const String apiUrl = "$mainUrl/admin/groups";
 
-
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -36,8 +36,9 @@ class GroupController extends StateNotifier<List<GroupData>> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        List<GroupData> fetchedGroups =
-            (data["groups"] as List).map((group) => GroupData.fromJson(group)).toList();
+        List<GroupData> fetchedGroups = (data["groups"] as List)
+            .map((group) => GroupData.fromJson(group))
+            .toList();
 
         state = fetchedGroups;
         hasError = false;

@@ -7,7 +7,8 @@ class ConfirmationDialog extends StatelessWidget {
   final String message;
   final WidgetRef ref;
 
-  const ConfirmationDialog({super.key, required this.message, required this.ref});
+  const ConfirmationDialog(
+      {super.key, required this.message, required this.ref});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,8 @@ class ConfirmationDialog extends StatelessWidget {
   }
 }
 
-void showConfirmationDialog(BuildContext context, WidgetRef ref, String message) {
+void showConfirmationDialog(
+    BuildContext context, WidgetRef ref, String message) {
   showDialog(
     context: context,
     builder: (BuildContext context) {

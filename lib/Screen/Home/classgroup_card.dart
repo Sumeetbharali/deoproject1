@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:classwix_orbit/Screen/MyGroup/group_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +9,15 @@ class ClassgroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double imageSize = screenWidth * 0.3;
+
     return GestureDetector(
       onTap: () => Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const GroupsScreen())),
+          MaterialPageRoute(builder: (context) =>  GroupsScreen(groupid: group['id'],))),
       child: Container(
         padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -27,21 +32,22 @@ class ClassgroupCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
-              child: Container(
-                height: 80,
-                width: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      blurRadius: 4,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
+            Container(
+              height: imageSize*0.5,
+              width: imageSize,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 4,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
                 child: CachedNetworkImage(
                   imageUrl: group['image'],
                   fit: BoxFit.cover,
@@ -52,30 +58,32 @@ class ClassgroupCard extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    group['title'],
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2.0),
-                    child: Text(
-                      group['courseTitle'],
-                      style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300),
-                      textAlign: TextAlign.center,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      group['title'],
+                      style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    AutoSizeText(
+                      group['courseTitle'],
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: screenWidth * 0.04, 
+                          fontWeight: FontWeight.w300),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

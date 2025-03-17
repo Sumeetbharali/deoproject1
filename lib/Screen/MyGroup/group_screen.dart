@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GroupsScreen extends ConsumerStatefulWidget {
-  const GroupsScreen({super.key});
+  final int? groupid;
+  const GroupsScreen({this.groupid,super.key});
 
   @override
   _GroupsScreenState createState() => _GroupsScreenState();
@@ -44,6 +45,10 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen>
     final groups = ref.watch(groupControllerProvider);
     final controller = ref.read(groupControllerProvider.notifier);
 
+    final filteredGroups = widget.groupid != null
+        ? groups.where((group) => group.id == widget.groupid).toList()
+        : groups; 
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -63,17 +68,24 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen>
             ? const Center(child: CircularProgressIndicator())
             : controller.hasError
                 ? ErrorWidgetCustom(onRetry: controller.fetchGroups)
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    itemCount: groups.length,
-                    itemBuilder: (context, index) {
-                      return GroupItem(
-                        group: groups[index],
-                        controller: _controller,
-                        animation: _animation,
-                      );
-                    },
-                  ),
+                : filteredGroups.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "No Groups Found!",
+                          style: TextStyle(fontSize: 16, color: AppColors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(12.0),
+                        itemCount: filteredGroups.length,
+                        itemBuilder: (context, index) {
+                          return GroupItem(
+                            group: filteredGroups[index],
+                            controller: _controller,
+                            animation: _animation,
+                          );
+                        },
+                      ),
       ),
     );
   }

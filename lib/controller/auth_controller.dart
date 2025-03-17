@@ -52,18 +52,23 @@ class AuthController extends StateNotifier<LoginResponse?> {
         state = loginResponse;
         return true;
       }
-    } 
-    catch (e) {
+    } catch (e) {
       logger.e("Login failed: $e");
     }
     return false;
   }
 
-  Future<void> _saveUserData(LoginResponse loginResponse,WidgetRef ref) async {
+  Future<void> _saveUserData(LoginResponse loginResponse, WidgetRef ref) async {
     if (prefs != null) {
-      await prefs!.setString(_authTokenKey, loginResponse.token); ///token
-      ref.read(sampleProvider.notifier).saveToken(loginResponse.token);///token
-      await prefs!.setString(_userDataKey, jsonEncode(loginResponse.toJson()));///userData
+      await prefs!.setString(_authTokenKey, loginResponse.token);
+
+      ///token
+      ref.read(sampleProvider.notifier).saveToken(loginResponse.token);
+
+      ///token
+      await prefs!.setString(_userDataKey, jsonEncode(loginResponse.toJson()));
+
+      ///userData
 
       logger.i(" User login state saved: ${loginResponse.toJson()}");
     } else {

@@ -10,8 +10,6 @@ class CustomGeneralcard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final currentToken = ref.read(authServiceProvidere.notifier).getuserData();
-
     return ListTile(
       title: Text(title),
       trailing: Icon(icon, color: Colors.purple),

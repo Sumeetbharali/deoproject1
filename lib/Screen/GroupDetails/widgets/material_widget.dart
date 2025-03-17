@@ -1,20 +1,22 @@
 import 'dart:io';
-
-import 'package:classwix_orbit/core/constants/copies.dart';
-import 'package:classwix_orbit/core/constants/styles.dart';
-import 'package:classwix_orbit/core/utils/widgets/custom_snack_bar.dart';
-import 'package:classwix_orbit/provider/sample_provider.dart';
-import 'package:classwix_orbit/widgets/file_picker.dart';
-import 'package:classwix_orbit/widgets/material_card.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import '../../../core/constants/copies.dart';
+import '../../../core/constants/styles.dart';
+import '../../../core/utils/widgets/custom_snack_bar.dart';
+import '../../../provider/sample_provider.dart';
+import '../../../widgets/file_picker.dart';
+import 'material_card.dart';
 
 class MaterialWidget extends ConsumerStatefulWidget {
   final List<dynamic> materialList;
+
   final dynamic groupDetails;
-  const MaterialWidget(this.groupDetails, {super.key, required this.materialList});
+  const MaterialWidget(
+      {super.key, required this.groupDetails, required this.materialList});
 
   @override
   _MaterialWidgetState createState() => _MaterialWidgetState();
@@ -25,76 +27,113 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
   File? selectedAudio;
   File? selectedPdf;
   bool isUploading = false;
-  Future<File?> pickFile(String type) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: type == "photo"
-          ? FileType.image
-          : type == "audio"
-              ? FileType.audio
-              : FileType.custom,
-      allowedExtensions: type == "pdf" ? ['pdf'] : null,
-    );
 
-    if (result != null) {
-      setState(() {
-        if (type == "photo") selectedPhoto = File(result.files.single.path!);
-        if (type == "audio") selectedAudio = File(result.files.single.path!);
-        if (type == "pdf") selectedPdf = File(result.files.single.path!);
-      });
+  Future<File?> pickFile(String type) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: type == "photo"
+            ? FileType.image
+            : type == "audio"
+                ? FileType.audio
+                : FileType.custom,
+        allowedExtensions: type == "pdf" ? ['pdf'] : null,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        logger.e("No file selected!");
+        return null;
+      }
+
+      PlatformFile file = result.files.first;
+      return file.path != null
+          ? File(file.path!)
+          : await _convertUriToFile(file);
+    } catch (e) {
+      CustomSnackBar.showSnackBar(
+          context, "Error picking file: $e", SnackBarType.failure);
+      return null;
     }
-    return type == "photo"
-        ? selectedPhoto
-        : type == "audio"
-            ? selectedAudio
-            : selectedPdf;
   }
 
-  Future<void> uploadFiles(BuildContext context) async {
+  Future<File?> _convertUriToFile(PlatformFile file) async {
+    try {
+      final bytes = await File(file.path!).readAsBytes();
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/${file.name}');
+      await tempFile.writeAsBytes(bytes);
+      return tempFile;
+    } catch (e) {
+      logger.e("Error converting URI: $e");
+      return null;
+    }
+  }
+
+  Future<void> uploadFiles(
+      BuildContext context, Function setDialogState) async {
     if (isUploading) return; // Prevent multiple uploads
 
-    setState(() {
-      isUploading = true; // Start uploading
+    if (selectedPhoto == null && selectedAudio == null && selectedPdf == null) {
+      CustomSnackBar.showSnackBar(
+          context,
+          "Please select at least one file before uploading.",
+          SnackBarType.failure);
+      return;
+    }
+
+    setDialogState(() {
+      isUploading = true;
     });
 
     final authToken = ref.read(sampleProvider);
-
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("https://test.classwix.com/uploads"));
-    request.headers['Authorization'] = "Bearer $authToken";
-    request.fields['course_id'] = widget.groupDetails!['course_id'].toString();
-    request.fields['group_id'] = widget.groupDetails!['id'].toString();
-
-    if (selectedPhoto != null) {
-      request.files
-          .add(await http.MultipartFile.fromPath("photo", selectedPhoto!.path));
-    }
-    if (selectedAudio != null) {
-      request.files
-          .add(await http.MultipartFile.fromPath("audio", selectedAudio!.path));
-    }
-    if (selectedPdf != null) {
-      request.files
-          .add(await http.MultipartFile.fromPath("pdf", selectedPdf!.path));
+    if (authToken == null || authToken.isEmpty) {
+      setDialogState(() => isUploading = false);
+      return;
     }
 
-    var response = await request.send();
+    try {
+      var request = http.MultipartRequest(
+          "POST", Uri.parse("https://test.classwix.com/uploads"));
+      request.headers['Authorization'] = "Bearer $authToken";
+      request.fields['course_id'] =
+          widget.groupDetails!['course_id'].toString();
+      request.fields['group_id'] = widget.groupDetails!['id'].toString();
 
-    setState(() {
-      isUploading = false; // Stop uploading
-    });
+      if (selectedPhoto != null && await selectedPhoto!.exists()) {
+        request.files.add(
+            await http.MultipartFile.fromPath("photo", selectedPhoto!.path));
+      }
+      if (selectedAudio != null && await selectedAudio!.exists()) {
+        request.files.add(
+            await http.MultipartFile.fromPath("audio", selectedAudio!.path));
+      }
+      if (selectedPdf != null && await selectedPdf!.exists()) {
+        request.files
+            .add(await http.MultipartFile.fromPath("pdf", selectedPdf!.path));
+      }
 
-    if (response.statusCode == 200) {
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      logger.d("Response: $responseBody");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        CustomSnackBar.showSnackBar(
+            context, "Files uploaded successfully!", SnackBarType.success);
+        setDialogState(() {
+          selectedPhoto = null;
+          selectedAudio = null;
+          selectedPdf = null;
+        });
+      } else {
+        CustomSnackBar.showSnackBar(
+            context,
+            "Failed to upload files. Error ${response.statusCode}",
+            SnackBarType.failure);
+      }
+    } catch (e) {
       CustomSnackBar.showSnackBar(
-        context,
-        "Files uploaded successfully!",
-        SnackBarType.success,
-      );
-    } else {
-      CustomSnackBar.showSnackBar(
-        context,
-        "Failed to upload files.",
-        SnackBarType.failure,
-      );
+          context, "Upload failed! Please try again.", SnackBarType.failure);
+    } finally {
+      setDialogState(() => isUploading = false);
     }
   }
 
@@ -129,8 +168,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                           context: context,
                           builder: (BuildContext dialogContext) {
                             return StatefulBuilder(
-                              
-                              builder: (context, setState) {
+                              builder: (context, setDialogState) {
                                 return AlertDialog(
                                   title: const Text("Upload Files"),
                                   content: Column(
@@ -144,9 +182,8 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                                         onTap: () async {
                                           final file = await pickFile("photo");
                                           if (file != null) {
-                                            setState(() {
-                                              selectedPhoto =
-                                                  file; 
+                                            setDialogState(() {
+                                              selectedPhoto = file;
                                             });
                                           }
                                         },
@@ -159,7 +196,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                                         onTap: () async {
                                           final file = await pickFile("audio");
                                           if (file != null) {
-                                            setState(() {
+                                            setDialogState(() {
                                               selectedAudio = file;
                                             });
                                           }
@@ -173,7 +210,7 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                                         onTap: () async {
                                           final file = await pickFile("pdf");
                                           if (file != null) {
-                                            setState(() {
+                                            setDialogState(() {
                                               selectedPdf = file;
                                             });
                                           }
@@ -184,29 +221,29 @@ class _MaterialWidgetState extends ConsumerState<MaterialWidget> {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        selectedPhoto = null;
-                                        selectedAudio = null;
-                                        selectedPdf = null;
+                                        setDialogState(() {
+                                          selectedPhoto = null;
+                                          selectedAudio = null;
+                                          selectedPdf = null;
+                                        });
                                         Navigator.pop(dialogContext);
                                       },
                                       child: const Text("Cancel"),
                                     ),
                                     ElevatedButton(
                                       onPressed: isUploading
-                                          ? null // Disable button while uploading
+                                          ? null
                                           : () async {
-                                              await uploadFiles(dialogContext);
-                                              Navigator.pop(dialogContext);
+                                              await uploadFiles(dialogContext,
+                                                  setDialogState);
+                                              if (!isUploading) {
+                                                Navigator.pop(dialogContext);
+                                              }
                                             },
                                       child: isUploading
-                                          ? const SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 2,
-                                              ),
-                                            )
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2)
                                           : const Text("Submit"),
                                     ),
                                   ],

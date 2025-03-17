@@ -25,7 +25,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       });
     });
     Future.delayed(const Duration(seconds: 2), () {
-      // change the sec to 3 when you implement the splash screen
       final String? authToken = ref.read(sampleProvider);
       logger.d("in splash: $authToken ");
 

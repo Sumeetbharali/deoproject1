@@ -25,4 +25,6 @@ class AppCopies {
   static const String githubLink = "https://github.com/HariHara-sn";
   static const String developerContact =
       "📧 Contact: sudhanabirami007@gmail.com";
+  static const String randomChar = "abcdefghijklmnopqrstuvwxyz0123456789@#";
+  static const String timefalls = "The Time will be set for tomorrow";
 }

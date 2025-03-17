@@ -1,9 +1,7 @@
+import 'package:classwix_orbit/Screen/Payment/Payment_details.dart';
+import 'package:classwix_orbit/controller/auth_controller.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
-import 'package:classwix_orbit/core/utils/widgets/custom_snack_bar.dart';
-import 'package:classwix_orbit/provider/sample_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PaymentsScreen extends ConsumerStatefulWidget {
@@ -16,13 +14,21 @@ class PaymentsScreen extends ConsumerStatefulWidget {
 class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
   List<Map<String, dynamic>> allPayments = [];
   List<Map<String, dynamic>> filteredPayments = [];
+  int? groupidentity;
   bool isLoading = true;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchPayments();
+    Future.microtask(() {
+      final userData = ref.read(authProvider);
+      groupidentity = userData?.user.id;
+
+      if (groupidentity != null) {
+        fetchPayments();
+      }
+    });
   }
 
   Future<void> fetchPayments() async {
@@ -30,57 +36,21 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
       isLoading = true;
     });
 
-    final authToken = ref.read(sampleProvider);
-    const String apikey = "https://api.classwix.com/api/admin/payrolls";
+    final paymentsRepo = ref.read(paymentsRepositoryProvider);
+    final fetchedPayments =
+        await paymentsRepo.fetchPayments(context, groupidentity);
 
-    try {
-      final response = await http.get(
-        Uri.parse(apikey),
-        headers: {
-          "Authorization": "Bearer $authToken",
-          "Content-Type": "application/json",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final List<dynamic> apiPayments = data["payments"];
-
-        setState(() {
-          allPayments = apiPayments.map((payment) {
-            return {
-              "instructorName": payment["user"]?["name"] ?? "N/A",
-              "email": payment["user"]?["email"] ?? "N/A",
-              "phone": payment["user"]?["phone"] ?? "N/A",
-              "classes": payment["no_of_classes"] ?? "0",
-              "month": payment["month"] ?? "N/A",
-              "year": payment["year"] ?? "N/A",
-              "creditDate": payment["created_at"] != null
-                  ? payment["created_at"].split("T")[0]
-                  : "N/A",
-              "totalAmount": payment["total_amount"] ?? "0",
-            };
-          }).toList();
-
-          filteredPayments = List.from(allPayments);
-          isLoading = false;
-        });
-      } else {
-        throw Exception("Failed to load payments");
-      }
-    } catch (e) {
-      CustomSnackBar.showSnackBar(
-          context, "Error fetching payments: $e", SnackBarType.failure);
-      setState(() {
-        isLoading = false;
-      });
-    }
+    setState(() {
+      allPayments = fetchedPayments;
+      filteredPayments = List.from(fetchedPayments);
+      isLoading = false;
+    });
   }
 
   void filterPayments(String query) {
     setState(() {
       if (query.isEmpty) {
-        filteredPayments = List.from(allPayments); // Reset to all data
+        filteredPayments = List.from(allPayments);
       } else {
         filteredPayments = allPayments
             .where((payment) => payment["instructorName"]
@@ -94,6 +64,13 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userData = ref.watch(authProvider);
+    if (groupidentity == null && userData?.user.id != null) {
+      setState(() {
+        groupidentity = userData?.user.id;
+        fetchPayments();
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -106,24 +83,15 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
         backgroundColor: Colors.white,
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          await fetchPayments();
-        },
+        onRefresh: fetchPayments,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: TextField(
+                TextField(
                     controller: searchController,
                     onChanged: filterPayments,
                     decoration: InputDecoration(
@@ -142,12 +110,12 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                       fillColor: AppColors.appbar.withOpacity(0.1),
                     ),
                   ),
-                ),
+                
                 const SizedBox(height: 10),
                 if (isLoading)
                   const Center(child: CircularProgressIndicator())
                 else if (filteredPayments.isEmpty)
-                  const Center(child: Text("No payments found"))
+                  const Center(child: Text("No payments found for this group"))
                 else
                   Expanded(
                     child: ListView.builder(
@@ -168,7 +136,6 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 15),
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -206,9 +173,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
+                                  const SizedBox(height: 5),
                                   Row(
                                     children: [
                                       const Icon(
@@ -225,9 +190,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
+                                  const SizedBox(height: 5),
                                   Row(
                                     children: [
                                       const Icon(
@@ -261,10 +224,7 @@ class _PaymentsScreenState extends ConsumerState<PaymentsScreen> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 10),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(

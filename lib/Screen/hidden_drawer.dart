@@ -106,7 +106,7 @@ class _HiddenDrawerState extends State<HiddenDrawer> {
             children: [
               Image.asset(
                 "assets/logo/appbar_logo.png",
-                height: 40, 
+                height: 40,
               ),
             ],
           ),

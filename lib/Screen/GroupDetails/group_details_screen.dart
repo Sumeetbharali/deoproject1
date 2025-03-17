@@ -1,6 +1,6 @@
 import 'package:classwix_orbit/Screen/GroupDetails/group_details_provider.dart';
 import 'package:classwix_orbit/Screen/GroupDetails/widgets/error_widget.dart';
-import 'package:classwix_orbit/Screen/GroupDetails/widgets/group_classcode_widget.dart';
+import 'package:classwix_orbit/Screen/GroupDetails/widgets/startclass_widget.dart';
 import 'package:classwix_orbit/Screen/GroupDetails/widgets/material_widget.dart';
 import 'package:classwix_orbit/Screen/GroupDetails/widgets/videolist_widget.dart';
 import 'package:classwix_orbit/core/constants/colors.dart';
@@ -16,6 +16,7 @@ class GroupDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupState = ref.watch(groupDetailsProvider(groupId));
+    
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -58,8 +59,8 @@ class GroupDetailsScreen extends ConsumerWidget {
                       const SizedBox(height: 20),
                       Container(
                         margin: const EdgeInsets.only(bottom: 50),
-                        height: 500,
-                        child: _buildTabView(
+                        height: 460,
+                        child: _buildTabView(groupState.groupDetails,
                             groupState.videoList, groupState.materialsList),
                       ),
                     ],
@@ -68,7 +69,8 @@ class GroupDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTabView(List<dynamic> videoList, List<dynamic> materialsList) {
+  Widget _buildTabView(dynamic groupDetails, List<dynamic> videoList,
+      List<dynamic> materialsList) {
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -86,7 +88,8 @@ class GroupDetailsScreen extends ConsumerWidget {
             child: TabBarView(
               children: [
                 VideolistWidget(videoList: videoList),
-                MaterialWidget(null, materialList: materialsList),
+                MaterialWidget(
+                    groupDetails: groupDetails, materialList: materialsList),
               ],
             ),
           ),

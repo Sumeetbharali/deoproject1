@@ -24,17 +24,14 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     fetchTimetable();
   }
 
- 
   Future<void> fetchTimetable() async {
-    final authToken = ref.read(sampleProvider); 
+    final authToken = ref.read(sampleProvider);
     final response = await http.get(
       Uri.parse("$mainUrl/micro/routines"),
       headers: {
-        "Authorization":
-            "Bearer $authToken",
+        "Authorization": "Bearer $authToken",
       },
     );
-    
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -95,11 +92,11 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
     if (todaysEvents.isNotEmpty) {
       int eventHour = todaysEvents.first.startTime.hour;
-      int scrollIndex = eventHour - 8; // Since time slots start from 08:00 AM
+      int scrollIndex = eventHour - 8;
 
       if (scrollIndex >= 0) {
         _scrollController.animateTo(
-          scrollIndex * 60.0, // Each time slot is 60px in height
+          scrollIndex * 60.0,
           duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
@@ -188,7 +185,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     }
 
     return ListView.builder(
-      controller: _scrollController, 
+      controller: _scrollController,
       itemCount: 13, // 08:00 to 20:00
       itemBuilder: (context, index) {
         final hour = index + 8;

@@ -30,6 +30,5 @@ class SignInTextfield extends StatelessWidget {
         LengthLimitingTextInputFormatter(10),
       ],
     );
-    ;
   }
 }

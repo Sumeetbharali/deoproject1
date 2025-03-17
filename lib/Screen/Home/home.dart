@@ -1,122 +1,39 @@
-import 'dart:convert';
 import 'package:classwix_orbit/Screen/Home/carousel_widget.dart';
 import 'package:classwix_orbit/Screen/Home/classgroup_card.dart';
-import 'package:classwix_orbit/core/constants/api_endpoint.dart';
+import 'package:classwix_orbit/Screen/Home/controller.dart';
+import 'package:classwix_orbit/Screen/MyGroup/group_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '/provider/sample_provider.dart';
 
-class HomePage extends ConsumerStatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<String> imageList = [
+      "https://img.freepik.com/free-vector/student-graduation-cap-using-computer-desk_1262-21421.jpg",
+      "https://img.freepik.com/free-vector/gradient-international-day-education-illustration_23-2150011975.jpg?t=st=1741625465~exp=1741629065~hmac=323912386a72346dae1360fdac29dbf75bdb62d598d2b07c3fb6f1bd2f0d7c3e&w=1380",
+      "https://img.freepik.com/free-vector/online-education-illustration-concept_52683-37480.jpg",
+      "https://img.freepik.com/free-vector/school-online-education-distance-learning-courses-distant-webinar-conference-tutorial-lessons-idea-student-gaining-knowledge-digital-platform_335657-1681.jpg",
+      "https://img.freepik.com/free-vector/online-certification-illustration_23-2148573635.jpg",
+    ];
 
-class _HomePageState extends ConsumerState<HomePage> {
-  List<String> imageUrls = [];
-  List<Map<String, dynamic>> classGroups = [];
-  bool isLoading = true;
-  bool hasError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCarousels();
-    fetchGroups();
-  }
-
-  Future<void> fetchCarousels() async {
-    final authToken = ref.read(sampleProvider);
-    const String url = "$mainUrl/admin/config/carousels";
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Authorization": "Bearer $authToken"},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        List<dynamic> carousels = data["carousels"];
-
-        setState(() {
-          imageUrls =
-              carousels.map<String>((carousel) => carousel["path"]).toList();
-        });
-      } else {
-        throw Exception("Failed to load carousels");
-      }
-    } catch (e) {
-      print("Error fetching carousels: $e");
-    }
-  }
-
-
-  Future<void> fetchGroups() async {
-    setState(() {
-      isLoading = true;
-      hasError = false;
-    });
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    final authToken = ref.watch(sampleProvider);
-    const String url = "$mainUrl/admin/groups";
-
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Authorization": "Bearer $authToken"},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        List<dynamic> groups = data["groups"];
-
-        setState(() {
-          classGroups = groups.map((group) {
-            String courseTitle = "No Course Assigned";
-            if (group.containsKey("course") && group["course"] != null) {
-              courseTitle = group["course"]["title"] ?? "No Course Available";
-            }
-            return {
-              "id": group["id"],
-              "title": group["name"],
-              "courseTitle": courseTitle,
-              "image":
-                  "https://img.freepik.com/free-vector/student-graduation-cap-using-computer-desk_1262-21421.jpg",
-            };
-          }).toList();
-          isLoading = false;
-          hasError = false;
-        });
-      } else {
-        throw Exception("Failed to load data");
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-        hasError = true;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    final groupState = ref.watch(groupControllerProvider);
+    final groupController = ref.read(groupControllerProvider.notifier);
+    final carouselImages = ref.watch(carouselProvider);
+ 
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
-          await fetchCarousels();
-          await fetchGroups();
+          await ref.read(carouselProvider.notifier).fetchCarousels();
+          await groupController.fetchGroups();
         },
-        child: isLoading
+        child: groupController.isLoading
             ? const Center(child: CircularProgressIndicator())
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  if (hasError)
+                  if (groupController.hasError)
                     Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -128,15 +45,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                           const SizedBox(height: 10),
                           ElevatedButton(
                             onPressed: () {
-                              fetchCarousels();
-                              fetchGroups();
+                              ref
+                                  .read(carouselProvider.notifier)
+                                  .fetchCarousels();
+                              groupController.fetchGroups();
                             },
                             child: const Text("Retry"),
                           ),
                         ],
                       ),
                     )
-                  else if (classGroups.isEmpty)
+                  else if (groupState.isEmpty)
                     const Center(
                       child: Text(
                         "No groups assigned yet",
@@ -147,29 +66,39 @@ class _HomePageState extends ConsumerState<HomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (imageUrls.isNotEmpty)
-                          CarouselWidget(imageUrls: imageUrls),
-
-                        const SizedBox(height: 55),
-                        // My Class Groups Section
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "My Class Groups",
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            TextButton(
-                                onPressed: () {}, child: const Text("See All"))
-                          ],
+                        if (carouselImages.isNotEmpty)
+                          CarouselWidget(imageUrls: carouselImages),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 55.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "My Class Groups",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              TextButton(
+                                  onPressed: () {},
+                                  child: const Text("See All"))
+                            ],
+                          ),
                         ),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: classGroups.length,
+                          itemCount: groupState.length,
                           itemBuilder: (context, index) {
-                            return ClassgroupCard(group: classGroups[index]);
+                            final group = groupState[index];
+                            
+                            return ClassgroupCard(
+                              group: {
+                                "id": group.id,
+                                "title": group.name,
+                                "courseTitle": group.courseTitle,
+                                "image": imageList[index],
+                              },
+                            );
                           },
                         ),
                       ],

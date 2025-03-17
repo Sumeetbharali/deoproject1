@@ -1,48 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-
-// class AudioPlayerScreen extends StatefulWidget {
-//   final String url;
-//   const AudioPlayerScreen({super.key, required this.url});
-
-//   @override
-//   State<AudioPlayerScreen> createState() => _AudioPlayerScreenState();
-// }
-
-// class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
-//   final AudioPlayer _audioPlayer = AudioPlayer();
-//   bool isPlaying = false;
-
-//   @override
-//   void dispose() {
-//     _audioPlayer.dispose();
-//     super.dispose();
-//   }
-
-//   void _togglePlayPause() async {
-//     if (isPlaying) {
-//       await _audioPlayer.pause();
-//     } else {
-//       await _audioPlayer.play(UrlSource(widget.url));
-//     }
-//     setState(() => isPlaying = !isPlaying);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Audio Player")),
-//       body: Center(
-//         child: IconButton(
-//           icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow, size: 50),
-//           onPressed: _togglePlayPause,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
 class AudioPlayerBottomSheet extends StatefulWidget {
   final String url;
   const AudioPlayerBottomSheet({super.key, required this.url});
@@ -127,9 +84,9 @@ class _AudioPlayerBottomSheetState extends State<AudioPlayerBottomSheet> {
                       .clamp(0.0, _duration.inSeconds.toDouble()),
                   onChanged: (value) {
                     setState(() => _position =
-                        Duration(seconds: value.toInt())); // Update UI smoothly
+                        Duration(seconds: value.toInt()));
                   },
-                  onChangeEnd: (value) => _seekAudio(value), // Seek after release
+                  onChangeEnd: (value) => _seekAudio(value), 
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

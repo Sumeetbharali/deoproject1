@@ -1,19 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_pdfview/flutter_pdfview.dart';
-
-// class PDFViewerScreen extends StatelessWidget {
-//   final String url;
-//   const PDFViewerScreen({super.key, required this.url});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("PDF Viewer")),
-//       body: const PDFView(filePath: "http://ebooks.syncfusion.com/downloads/flutter-succinctly/flutter-succinctly.pdf"),
-//     );
-//   }
-// }
-
 import 'package:classwix_orbit/core/constants/colors.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -69,19 +53,6 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
               Icons.arrow_back_ios_new_rounded,
               color: AppColors.background,
             )),
-        // TODO: Don't add these buttons
-        /*actions: [
-          IconButton(
-            icon: const Icon(Icons.zoom_in),
-            onPressed: () => (),
-              // (_pdfController?.entry?.setZoom(1.5))
-          ),
-          IconButton(
-            icon: const Icon(Icons.zoom_out),
-            onPressed: () => (),
-              // (_pdfController?.entry?.setZoom(0.8))
-          ),
-        ],*/
       ),
       body: _pdfController != null
           ? PdfView(

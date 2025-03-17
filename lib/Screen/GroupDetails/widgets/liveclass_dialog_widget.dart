@@ -6,13 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LiveClassDialog extends ConsumerStatefulWidget {
   final TextEditingController linkController;
-  final TextEditingController timeController;
   final int groupId;
 
   const LiveClassDialog({
     super.key,
     required this.linkController,
-    required this.timeController,
     required this.groupId,
   });
 
@@ -31,7 +29,8 @@ class _LiveClassDialogState extends ConsumerState<LiveClassDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Live Class Link", style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text("Live Class Link",
+              style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 5),
           TextField(
             controller: widget.linkController,
@@ -43,34 +42,7 @@ class _LiveClassDialogState extends ConsumerState<LiveClassDialog> {
             ),
           ),
           const SizedBox(height: 10),
-          TextField(
-            onTap: () {
-              showTimePicker(
-                helpText: "Select a Time",
-                cancelText: "Close",
-                confirmText: "Set Time",
-                hourLabelText: "Hour",
-                minuteLabelText: "Minute",
-                context: context,
-                initialTime: TimeOfDay.now(),
-              ).then((value) {
-                if (value != null) {
-                  setState(() {
-                    widget.timeController.text = value.format(context);
-                  });
-                }
-              });
-            },
-            controller: widget.timeController,
-            decoration: InputDecoration(
-              hintText: "Class Time",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
-            readOnly: true,
-          ),
-        ],
+         ],
       ),
       actions: [
         TextButton(
@@ -84,13 +56,11 @@ class _LiveClassDialogState extends ConsumerState<LiveClassDialog> {
         TextButton(
           onPressed: () async {
             String link = widget.linkController.text.trim();
-            String classTime = widget.timeController.text.trim();
-
-            if (link.isNotEmpty && classTime.isNotEmpty) {
+            if (link.isNotEmpty) {
               try {
                 await ref
                     .read(groupDetailsProvider(widget.groupId).notifier)
-                    .submitLiveClassLink(link, classTime);
+                    .submitLiveClassLink(link, "sample");
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -103,7 +73,8 @@ class _LiveClassDialogState extends ConsumerState<LiveClassDialog> {
                   ),
                 );
               } catch (e) {
-                CustomSnackBar.showSnackBar(context, e.toString(), SnackBarType.failure);
+                CustomSnackBar.showSnackBar(
+                    context, e.toString(), SnackBarType.failure);
               }
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
